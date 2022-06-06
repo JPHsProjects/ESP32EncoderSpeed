@@ -2,7 +2,7 @@
  * ESP32Encoder.cpp
  *
  *  Created on: Oct 15, 2018
- *      Author: hephaestus
+ *      Author: hephaestus 
  */
 
 #include <ESP32Encoder.h>
