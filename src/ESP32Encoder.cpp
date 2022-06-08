@@ -34,7 +34,9 @@ ESP32Encoder::ESP32Encoder(bool always_interrupt_, enc_isr_cb_t enc_isr_cb, void
 	_enc_isr_cb_data(enc_isr_cb_data),
 	attached{false},
 	direction{false},
-	working{false}
+	working{false},
+	ticks_avr{0},				// Averaged cpu ticks
+	ticks_IIR_lg_alpha{2}		// IIR Filter coefficient for filtering: lg_alpha 1:*1/2, 2:*1/4, 3:*1/8, 4=*1/16 ....
 {
 }
 
