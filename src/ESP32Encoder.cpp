@@ -7,6 +7,7 @@
 
 #include <ESP32Encoder.h>
 #include <soc/pcnt_struct.h>
+#include <sys/time.h>
 #include "esp_log.h"
 
 static const char* TAG = "ESP32Encoder";
@@ -36,7 +37,8 @@ ESP32Encoder::ESP32Encoder(bool always_interrupt_, enc_isr_cb_t enc_isr_cb, void
 	direction{false},
 	working{false},
 	ticks_avr{0},				// Averaged cpu ticks
-	ticks_IIR_lg_alpha{2}		// IIR Filter coefficient for filtering: lg_alpha 1:*1/2, 2:*1/4, 3:*1/8, 4=*1/16 ....
+	ticks_IIR_lg_alpha{2},	// IIR Filter coefficient for filtering: lg_alpha 1:*1/2, 2:*1/4, 3:*1/8, 4=*1/16 ....
+	last_time_of_day{0}
 {
 }
 
@@ -81,6 +83,14 @@ static void IRAM_ATTR esp32encoder_pcnt_intr_handler(void *arg) {
 				int16_t c;
 				pcnt_get_counter_value(unit, &c);
 				esp32enc->count += c;
+
+				// store averaged time
+				gettimeofday(&esp32enc->tv,NULL);
+				int64_t delta = esp32enc->last_time_of_day - esp32enc->tv.tv_usec;
+				esp32enc->last_time_of_day = esp32enc->tv.tv_usec;
+				// bitshift instead of multiplication 
+				esp32enc->ticks_avr = esp32enc->ticks_avr + ((delta - esp32enc->ticks_avr) >> esp32enc->ticks_IIR_lg_alpha);
+
 				pcnt_set_event_value(unit, PCNT_EVT_THRES_0, -1);
 				pcnt_set_event_value(unit, PCNT_EVT_THRES_1, 1);
 				pcnt_event_enable(unit, PCNT_EVT_THRES_0);

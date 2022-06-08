@@ -59,7 +59,8 @@ public:
 	enc_isr_cb_t _enc_isr_cb;
 	void* _enc_isr_cb_data;
 	int64_t ticks_avr;
-	uint64_t last_cpu_tick;
+	struct timeval tv;
+	int64_t last_time_of_day;
 	uint8_t ticks_IIR_lg_alpha;
 
 private:
