@@ -39,6 +39,7 @@ public:
 	void attachFullQuad(int aPintNumber, int bPinNumber);
 	void attachSingleEdge(int aPintNumber, int bPinNumber);
 	int64_t getCount();
+	int32_t getSpeed(uint8_t encoder_id);
 	int64_t clearCount();
 	int64_t pauseCount();
 	int64_t resumeCount();

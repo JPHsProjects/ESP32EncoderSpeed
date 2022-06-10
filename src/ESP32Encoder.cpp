@@ -256,6 +256,17 @@ int64_t ESP32Encoder::getCount() {
 	return count + getCountRaw();
 }
 
+int32_t ESP32Encoder::getSpeed(uint8_t encoder_id) {
+	ESP32Encoder * esp32enc = {};
+	uint32_t intr_status = PCNT.int_st.val;
+	if (intr_status & (BIT(encoder_id))){
+		esp32enc = ESP32Encoder::encoders[encoder_id];
+		return (60*1e6) / esp32enc->ticks_avr;
+	} else { 
+		return 0;
+	}
+}
+
 int64_t ESP32Encoder::clearCount() {
 	count = 0;
 	return pcnt_counter_clear(unit);
